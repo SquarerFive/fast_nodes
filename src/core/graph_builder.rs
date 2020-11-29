@@ -69,18 +69,10 @@ impl FGraphBuilder {
         let node_id: i32 = (self.graph.nodes.len() + 1) as i32;
         let mut node_name: String = "__add".to_string();
         node_name = format!("{}{idx}__", node_name, idx=node_id);
-        let node = FNode::new(
-            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::ADD
+        let mut node = FNode::new(
+            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::MULTIPLY
         );
-        let mut exp = "".to_string();
-        for i in 0..nodes.len() 
-        {
-            if i > 0 {
-                exp.push_str(&" + ".to_string());
-            }
-            exp.push_str("_i");
-            exp.push_str(&i.to_string());
-        }
+        self.forward(&mut node, nodes, "+");
         self.graph.nodes.insert(node_id, node);
         self
     }
@@ -108,36 +100,31 @@ impl FGraphBuilder {
         let mut node = FNode::new(
             node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::MULTIPLY
         );
+        self.forward(&mut node, nodes, "*");
+        self.graph.nodes.insert(node_id, node);
+        self
+    }
+    fn forward(&self, node:&mut FNode, nodes: Vec<i32>, operator: &str)
+    {
         let mut exp = "".to_string();
         for i in 0..nodes.len() 
         {
             if i > 0 {
-                exp.push_str(&" * ".to_string());
+                exp.push_str(&format!(" {} ", operator).to_string());
             }
             exp.push_str("_i");
             exp.push_str(&i.to_string());
         }
         node.expression = exp;
-        self.graph.nodes.insert(node_id, node);
-        self
     }
-
-    pub fn div(&mut self, nodes : &Vec<i32>) -> &mut Self {
+    pub fn div(&mut self, nodes : Vec<i32>) -> &mut Self {
         let node_id: i32 = (self.graph.nodes.len() + 1) as i32;
         let mut node_name: String = "__div".to_string();
         node_name = format!("{}{idx}__", node_name, idx=node_id);
-        let node = FNode::new(
-            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::DIVIDE
+        let mut node = FNode::new(
+            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::MULTIPLY
         );
-        let mut exp = "".to_string();
-        for i in 0..nodes.len() 
-        {
-            if i > 0 {
-                exp.push_str(&" / ".to_string());
-            }
-            exp.push_str("_i");
-            exp.push_str(&i.to_string());
-        }
+        self.forward(&mut node, nodes, "/");
         self.graph.nodes.insert(node_id, node);
         self
     }

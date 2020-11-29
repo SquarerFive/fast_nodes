@@ -80,6 +80,8 @@ mod tests {
             .mul(vec![1, 2])
             .assign("my_assignment".to_string())
             .create_node("my_new_var", 7.0)
+            .create_node("my_new_var2", 14.0)
+            .div(vec![5, 6])
             .assign("my_other_assignment".to_string())
             .build_()
             .as_string();
