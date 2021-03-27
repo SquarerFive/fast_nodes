@@ -2,13 +2,13 @@
 use crate::core::*;
 
 
-pub struct FCompiledGraph {
+pub struct FBuildGraph {
     payload: String
 }
 
 
 
-impl FCompiledGraph
+impl FBuildGraph
 {
     pub fn as_string(self) -> String {
         self.payload.clone()
@@ -70,7 +70,7 @@ impl FGraphBuilder {
         let mut node_name: String = "__add".to_string();
         node_name = format!("{}{idx}__", node_name, idx=node_id);
         let mut node = FNode::new(
-            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::MULTIPLY
+            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::ADD
         );
         self.forward(&mut node, nodes, "+");
         self.graph.nodes.insert(node_id, node);
@@ -78,12 +78,12 @@ impl FGraphBuilder {
     }
 
     
-    pub fn assign(&mut self, name:String) -> &mut Self{
+    pub fn assign(&mut self, name: &str) -> &mut Self{
         let node_id:i32 = (self.graph.nodes.len()+1) as i32;
         let node_name = name;
 
         let mut node = FNode::new(
-            node_name.clone(), node_id, Some(vec![node_id-1]), 0.0, 
+            String::from(node_name), node_id, Some(vec![node_id-1]), 0.0, 
             None, ENodeType::ASSIGNMENT
         );
         // TODO: generalised language for the graph that translates to RUST/GLSL
@@ -122,19 +122,21 @@ impl FGraphBuilder {
         let mut node_name: String = "__div".to_string();
         node_name = format!("{}{idx}__", node_name, idx=node_id);
         let mut node = FNode::new(
-            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::MULTIPLY
+            node_name, node_id, Some(nodes.clone()), 0.0, None, ENodeType::DIVIDE
         );
         self.forward(&mut node, nodes, "/");
         self.graph.nodes.insert(node_id, node);
         self
     }
 
+    /*/
     pub fn build(&self) -> String{
         build_graph(&self.graph, self.graph.nodes.get(&((self.graph.nodes.len() as i32)-0))
             .expect("Nothing in BTreeMap"))
     }
+    */
 
-    pub fn build_(&self) -> FCompiledGraph {
+    pub fn build(&self) -> FBuildGraph {
         // collect all of our assignments first
         let assignments: BTreeMap<&i32, &FNode> = self.graph.nodes.iter()
             .filter(|(_node_index, node_)| node_.node_type == ENodeType::ASSIGNMENT).collect();
@@ -147,7 +149,7 @@ impl FGraphBuilder {
             //result.push_str("\n");
         }        
         
-        FCompiledGraph {payload: result}
+        FBuildGraph {payload: result}
     }
 
     

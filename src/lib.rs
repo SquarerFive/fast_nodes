@@ -78,12 +78,12 @@ mod tests {
             .create_node("my_var", 3.5)
             .create_node("my_other_var", 2.0)
             .mul(vec![1, 2])
-            .assign("my_assignment".to_string())
+            .assign("my_assignment")
             .create_node("my_new_var", 7.0)
             .create_node("my_new_var2", 14.0)
             .div(vec![5, 6])
-            .assign("my_other_assignment".to_string())
-            .build_()
+            .assign("my_other_assignment")
+            .build()
             .as_string();
 
         println!("built graph: {}", graph_builder_);
